@@ -4,7 +4,9 @@
 
 #define MAX 20								/* Debugador definido para debugar, ide e para os fracos */
 #define bug(x) printf("%s: %d\n", #x, x)
+#define bug2(x) printf("%s: %lf\n", #x, x)
 #define e 2.71
+#define SEED 23								/* Definindo a seed */
 
 /* Modificacoes: O valor da tabela 2, no caso, as variaveis ultimaChegada (variaveis pq e um vetor), seguirao distribuicao exponencial 
 Ja o valor da tabela 4, no caso, as variaveis tempoAtendimento, seguirao distribuicao de poisson*/
@@ -20,7 +22,7 @@ int main()
 	
 	valor=50;			/* Atribuindo o valor 50 para a seed do algoritmo de geracao de valores aleatorios */
 	clientes=20;		/* Em vez de deixar os clientes aleatorios, atribuirei 20 clientes max logo */
-	lambda=12;			/* Como a media da exponencial e 12, criaremos uma variavel que define essa media para testar futuras mudancas */
+	lambda=1.00/12.00;	/* Como a media da exponencial e 12, criaremos uma variavel que define essa media para testar futuras mudancas */
 	eXP=pow(e, -6);
 	
 	for(i=0; i<clientes; i++)
@@ -28,18 +30,10 @@ int main()
 		cliente[i]=i+1;
 		
 		/* Usando o metodo de congruencia linear multiplicativa para definir novos valores aleatorios */
-		valor=valor*MAX%127;									/* Definindo o tempo desde a ultima chegada, usar 127 porque ele e primo */
-		percent=valor/127.00;									/* Transformando valores aleatorios inteiros em reais. Deixar os 0 apos a mantica pq se nao o valor ser truncado como inteiro */
-		ultimaChegada[i]=(1/lambda);							/* Fazendo a primeira parte da equacao para exponencial: (-(1/lambda)*ln(1-ui)) onde u e o valor aleatorio da vez */
-		ultimaChegada[i]=0-(ultimaChegada[i]*log(1-percent));	/* Em C, a funcao logaritmo natural, e escrita apenas log, enquanto log na base 10 e escrita log10 */
-		
-		/* Pegando valores de atendimento usando a frequencia acumulada ja dada na lista */
-		if(ultimaChegada[i]<=0.35)
-			ultimaChegada[i]=10;
-		else if(ultimaChegada<=0.75)
-			ultimaChegada[i]=12;
-		else
-			ultimaChegada[i]=14;
+		valor=valor*SEED%127;										/* Definindo o tempo desde a ultima chegada, usar 127 porque ele e primo */
+		percent=valor/127.00;										/* Transformando valores aleatorios inteiros em reais. Deixar os 0 apos a mantica pq se nao o valor ser truncado como inteiro */
+		ultimaChegada[i]=(1.00/lambda);								/* Fazendo a primeira parte da equacao para exponencial: (-(1/lambda)*ln(1-ui)) onde u e o valor aleatorio da vez */
+		ultimaChegada[i]=ceil(0-(ultimaChegada[i]*log(1-percent)));	/* Em C, a funcao logaritmo natural, e escrita apenas log, enquanto log na base 10 e escrita log10 */
 		
 		if(i==0)														/* Caso ele tenha chegado primeiro */
 			tempoDeChegada[i]=ultimaChegada[i];							/* O tempo de chegada no relogio sera o tempo desde a ultima chegada */
@@ -52,14 +46,14 @@ int main()
 			P=P*percent;												/* Passo 2, reatribuir o valor de P */
 			if(P<eXP)													/* Caso a condicao de aceitacao esteja concluida, calculamos o tempo de atendimento e resetamos os valores de n e P */
 			{
-				tempoAtendimento[i]=60/n;
+				tempoAtendimento[i]=ceil(60.00/n);						/* Funcao ceil arredonda para o maior valor */
 				n=0;
 				P=1;
 				break;
 			}else														/* Caso nao, permanecera no laco ate que a condicao seja satisfeita */
 			{
 				n++;
-				valor=valor*MAX%127;
+				valor=valor*SEED%127;
 				percent=valor/127.00;
 			}
 		}
@@ -82,6 +76,8 @@ int main()
 		
 		if(i==0)
 			tempoLivreCaixa[i]=tempoDeChegada[i];
+		else if((tempoDeChegada[i]-tempoFim[i-1])<=0)
+			tempoLivreCaixa[i]=0;
 		else
 			tempoLivreCaixa[i]=tempoDeChegada[i]-tempoFim[i-1];
 	}
