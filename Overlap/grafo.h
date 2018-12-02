@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 /* Cabecalho provisorio */
 /* Prototipos de struct */
 typedef struct Vertex Vertex;
@@ -9,12 +6,13 @@ typedef struct Path Path;
 /* Prototipos de funcoes */
 void show(Path *path);
 void initPath(Path *path);
-void push(Path *path, int vertex);
+void push(Path *path, int vertex, int proba);
 
 /* Declaracao de struct */
 typedef struct Vertex							/* Struct de vertices com o proximo apontando para um vertice que se liga */
 {
 	int vertex;									/* Armazena qual o vertice esta no struct */
+	double prob;								/* Armazena a probabilidade definida no vertice */
 	struct Vertex *next;						/* Aponta para o proximo struct do caminho, ou seja, para o membro do caminho anteior (por se tratar de pilha) */
 }Vertex;										/* Ex.: V0 -> V1, em uma pilha, ficaria armazenado como V1 -> V0, onde o V1 apontaria para V0 mas o V0 e o vertice inicial do grafo e V1 o final */
 
@@ -30,13 +28,14 @@ void initPath(Path *path)						/* Funcao para iniciar a lista, meio inutil, to p
 	path->length=0;
 }
 
-void push(Path *path, int vertex)				/* Funcao para adicionar elementos a lista, ou seja, adicionar o proximo vertice do caminho */
+void push(Path *path, int vertex, int proba)	/* Funcao para adicionar elementos a lista, ou seja, adicionar o proximo vertice do caminho */
 {
 	Vertex *aux;								/* Cria um vertice auxiliar */
 	
 	aux=malloc(sizeof(Vertex));					/* Aloca uma regiao de memoria para o vertice auxiliar */
 
 	aux->vertex=vertex;							/* Armazena conteudo no vertice auxiliar, no caso, o proximo vertice do caminho */
+	aux->prob=proba;							/* Define a probabilidade do vertice falhar */
 	aux->next=path->head;						/* O vertice armazenado aponta para o vertice anterior, formando um caminho */
 	path->head=aux;								/* O indicador de topo da pilha agora vai indicar o vertice auxiliar como topo */
 	path->length++;								/* Incrementando em 1 a variavel muito util de tamanho */
@@ -101,7 +100,7 @@ Path* interseccao(Path* p1, Path* p2)
 		for(v2=p2->head; v2!=NULL; v2=v2->next)
 			if(v1->vertex==v2->vertex)
 			{
-				push(aux, v1->vertex);
+				push(aux, v1->vertex, v1->prob);
 			}
 	}
 	
@@ -109,7 +108,7 @@ Path* interseccao(Path* p1, Path* p2)
 	return aux;
 }
 
-Path* genPath(int n, int mat[n][n], int count)				/* Funcao usada para gerar caminho e adiciona - los na pilha */
+Path* genPath(int n, int mat[n][n], int count, double proba)/* Funcao usada para gerar caminho e adiciona - los na pilha */
 {															/* Recebe o tamanho da matriz de incidencia, a propria matriz e a pilha onde os caminhos vao ser armazenados*/
 	int i, j, repeat, auxInt;								/* Variaveis para contagem dos lacos */
 	Path *aux;
@@ -121,17 +120,17 @@ Path* genPath(int n, int mat[n][n], int count)				/* Funcao usada para gerar cam
 		{
 			if(i==0 && j==0)								/* Caso esteja na primeira iteracao */
 			{
-				push(aux, i);								/* Adicionar V0, ou seja, o vertice inicial a pilha */
+				push(aux, i, proba);						/* Adicionar V0, ou seja, o vertice inicial a pilha */
 			}else if(aux->head->vertex!=i)					/* Caso o vertice nao esteja na pilha, interromper o laco */
 			{
 				break;
 			}else if(mat[i][n-1]==1)						/* Caso o vertice tenha ligacao com o ultimo vertice da matriz */
 			{
-				push(aux, (n-1));							/* Salvar o ultimo vertice no topo da pilha */
+				push(aux, (n-1), proba);					/* Salvar o ultimo vertice no topo da pilha */
 				goto END;									/* Terminar o algoritmo */
 			}else if(mat[i][j]==1 && count==0)				/* Caso nao tenha ligacao com o ultimo vertice da matriz mas tenha ligacao com outro vertice (o primeiro que achar) */
 			{
-				push(aux, j);								/* Alocar esse vertice na pilha para ser a proxima iteracao no laco */
+				push(aux, j, proba);						/* Alocar esse vertice na pilha para ser a proxima iteracao no laco */
 				break;										/* Termina o laco do j */
 			}else if(mat[i][j]==1)
 			{
@@ -141,11 +140,11 @@ Path* genPath(int n, int mat[n][n], int count)				/* Funcao usada para gerar cam
 					auxInt=j;
 				}else if(repeat==count)
 				{
-					push(aux, j);
+					push(aux, j, proba);
 					break;
 				}
 			}else if(j==(n-1))
-				push(aux, auxInt);
+				push(aux, auxInt, proba);
 		}
 	}
 	END:;
@@ -154,7 +153,7 @@ Path* genPath(int n, int mat[n][n], int count)				/* Funcao usada para gerar cam
 
 /* As quatro estacoes - inverno */
 /* Antonio Vivaldi */
-Path* multiPath(int n, int mat[n][n])
+Path* multiPath(int n, int mat[n][n], double proba)
 {
 	Path *path, *aux;
 	int count=0, i, j;
@@ -163,7 +162,7 @@ Path* multiPath(int n, int mat[n][n])
 
 	while(count<n)
 	{
-	aux[count]=*genPath(n, mat, count);
+	aux[count]=*genPath(n, mat, count, proba);
 	count++;
 	}
 	
