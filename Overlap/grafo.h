@@ -7,6 +7,7 @@ typedef struct Path Path;
 void show(Path *path);
 void initPath(Path *path);
 void push(Path *path, int vertex, int proba);
+void insertionSort(int arr[], int n);
 
 /* Declaracao de struct */
 typedef struct Vertex							/* Struct de vertices com o proximo apontando para um vertice que se liga */
@@ -101,10 +102,51 @@ Path* interseccao(Path* p1, Path* p2)
 			if(v1->vertex==v2->vertex)
 			{
 				push(aux, v1->vertex, v1->prob);
+				break;
 			}
 	}
 	
 	show(aux);
+	return aux;
+}
+
+Path* uniao(Path* p1, Path* p2)
+{
+	int tam=0, vet[99];
+	int i, flag;
+	
+	Path *aux;
+	Vertex *v1, *v2=p2->head;
+	
+	aux=malloc(sizeof(Path));
+	
+	for(v1=p1->head; v1!=NULL; v1=v1->next)
+	{
+		vet[tam]=v1->vertex;
+		tam++;
+	}
+	
+	for(v2=p2->head; v2!=NULL; v2=v2->next)
+	{
+		for(i=0, flag=0; i<tam; i++)
+		{
+			if(vet[i]==v2->vertex)
+			{
+				flag=1;
+				break;
+			}
+		}
+		if(flag==0)
+		{
+			vet[tam]=v2->vertex;
+			tam++;
+		}
+	}
+	
+	insertionSort(vet, tam);
+	for(i=0; i<tam; i++)
+		push(aux, vet[i], p1->head->prob);
+	
 	return aux;
 }
 
@@ -162,8 +204,8 @@ Path* multiPath(int n, int mat[n][n], double proba)
 
 	while(count<n)
 	{
-	aux[count]=*genPath(n, mat, count, proba);
-	count++;
+		aux[count]=*genPath(n, mat, count, proba);
+		count++;
 	}
 	
 	for(i=1; i<n; i++)
