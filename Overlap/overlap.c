@@ -6,6 +6,10 @@
 #define SUB 1
 #define SUM 2
 
+/*											IMPOTRTANTE												*/
+/*								Overflow deve estar a partir do passo 3								*/
+/*											IMPOTRTANTE												*/
+
 double confiabilidade;
 
 void overlap(int** mat, Path *caminho_minimo1, Path *caminho_minimo2, int op, int tam)
@@ -15,8 +19,10 @@ void overlap(int** mat, Path *caminho_minimo1, Path *caminho_minimo2, int op, in
 	int n=0, flag=0;
 	int pConfiabilidade;
 	
-	Path *aux;
-	Vertex *vAux;
+	Path *aux;																					/* Pilha de caminhos auxiliar que vai armazenar os valores que nao foram deletados */
+	Path *newStack;																				/* Pilha de caminhos que vai armazenar a uniao dos caminhos */
+	Vertex *vAux;																				/* Pilha de vetices auxiliar usado para definir a confiabilidade dos vertices */
+	
 	aux=malloc(tam*sizeof(Path));
 	
 	
@@ -29,12 +35,12 @@ void overlap(int** mat, Path *caminho_minimo1, Path *caminho_minimo2, int op, in
 		op=SUB;
 	
 	/* Passo 2 */
-	for(i=0; i<((sizeof(caminho_minimo1)/sizeof(Path))-2); i++)
+	for(i=0; i<((sizeof(caminho_minimo2)/sizeof(Path))-2); i++)
 	{
-		for(j=i+1; j<((sizeof(caminho_minimo1)/sizeof(Path))-1); j++)
-		{
-			if(compare(interseccao(caminho_minimo1[i], caminho_minimo2[j]), caminho_minimo1[i]))
-			{
+		for(j=i+1; j<((sizeof(caminho_minimo2)/sizeof(Path))-1); j++)
+		{																						/* Algoritmo vai fazer a interseccao dos caminhos armazenados na pilha */
+			if(compare(interseccao(&caminho_minimo2[i], &caminho_minimo2[j]), &caminho_minimo2[i]))
+			{																					/* Se a interseccao for igual ao caminho de indice j, o indice i sera marcado para ser deletado */
 				for(k=0; k<n; k++)
 					if(delete[k]==j)
 						flag=1;
@@ -44,8 +50,8 @@ void overlap(int** mat, Path *caminho_minimo1, Path *caminho_minimo2, int op, in
 					n++;
 				}
 			}
-			else if(compare(interseccao(caminho_minimo1[i], caminho_minimo2[j]), caminho_minimo1[j]))
-			{
+			else if(compare(interseccao(&caminho_minimo2[i], &caminho_minimo2[j]), &caminho_minimo2[j]))
+			{																					/* Caso contrario o indice i sera marcado como deletado */
 				for(k=0; k<n; k++)
 					if(delete[k]==i)
 						flag=1;
@@ -84,14 +90,14 @@ void overlap(int** mat, Path *caminho_minimo1, Path *caminho_minimo2, int op, in
 			for(i=0; i<j; i++)
 			{
 				pConfiabilidade=1;
-				for(vAux=aux->head; vAux!=NULL; vAux=vAux->prox)
+				for(vAux=aux->head; vAux!=NULL; vAux=vAux->next)
 					pConfiabilidade *= vAux->prob;
 				confiabilidade += pConfiabilidade;
 			}
 		else
 			{
 				pConfiabilidade=1;
-				for(vAux=aux->head; vAux!=NULL; vAux=vAux->prox)
+				for(vAux=aux->head; vAux!=NULL; vAux=vAux->next)
 					pConfiabilidade *= vAux->prob;
 				confiabilidade -= pConfiabilidade;
 			}
@@ -102,7 +108,7 @@ void overlap(int** mat, Path *caminho_minimo1, Path *caminho_minimo2, int op, in
 		for(i=0; i<j; i++)
 		{
 			pConfiabilidade=1;
-			for(vAux=aux->head; vAux!=NULL; vAux=vAux->prox)
+			for(vAux=aux->head; vAux!=NULL; vAux=vAux->next)
 				pConfiabilidade *= vAux->prob;
 			confiabilidade += pConfiabilidade;
 		}
@@ -110,7 +116,7 @@ void overlap(int** mat, Path *caminho_minimo1, Path *caminho_minimo2, int op, in
 		for(i=0; i<j; i++)
 		{
 			pConfiabilidade=1;
-			for(vAux=aux->head; vAux!=NULL; vAux=vAux->prox)
+			for(vAux=aux->head; vAux!=NULL; vAux=vAux->next)
 				pConfiabilidade *= vAux->prob;
 			confiabilidade -= pConfiabilidade;
 		}
@@ -119,10 +125,18 @@ void overlap(int** mat, Path *caminho_minimo1, Path *caminho_minimo2, int op, in
 	if(j>1)
 		for(i=1; i<j; i++)
 		{
-			
+			for(k=0; k<i; k++)
+				newStack=uniao(&aux[i], &aux[j]);
+			overlap(mat, caminho_minimo1, newStack, op, tam);
 		}
 		
 	/* Passo 6 */
+	for(i=0; i<j; i++)
+		while(pop(&aux[i])==1);
+	
+	free(aux);
+	free(newStack);
+	free(vAux);
 	return;
 }
 
@@ -145,5 +159,5 @@ int main()
 	caminho_minimo=multiPath(n, mat, vProbabilidade);
 	
 	/* 1 vai ser sub */
-	overlap(mat, caminho_minimo, caminho_minimo, SUB, n)
+	overlap(mat, caminho_minimo, caminho_minimo, SUB, n);
 }
