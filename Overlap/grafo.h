@@ -6,7 +6,7 @@ typedef struct Path Path;
 /* Prototipos de funcoes */
 void show(Path *path);
 void initPath(Path *path);
-void push(Path *path, int vertex, int proba);
+void push(Path *path, int vertex, double proba);
 void insertionSort(int arr[], int n);
 
 /* Declaracao de struct */
@@ -29,7 +29,7 @@ void initPath(Path *path)						/* Funcao para iniciar a lista, meio inutil, to p
 	path->length=0;
 }
 
-void push(Path *path, int vertex, int proba)	/* Funcao para adicionar elementos a lista, ou seja, adicionar o proximo vertice do caminho */
+void push(Path *path, int vertex, double proba)	/* Funcao para adicionar elementos a lista, ou seja, adicionar o proximo vertice do caminho */
 {
 	Vertex *aux;								/* Cria um vertice auxiliar */
 	
@@ -59,7 +59,8 @@ int pop(Path *path)											/* Funcao usada para retirar vertices da pilha, pa
 	if(path->head!=NULL)									/* Se o indicador do topo da pilha nao for NULL, ou seja, se a pilha nao estiver vazia */
 	{
 		Vertex *garbage;									/* Variavel auxiliar lixo usada para apagar o vertice da pilha */
-	
+		
+		path->length--;	
 		garbage=path->head;									/* Variavel lixo agora recebe a variavel do topo da pilha */
 		path->head=path->head->next;						/* Indicador de variavel do topo e passado para o proximo vertice, afinal, o anterior vai sumir */
 		free(garbage);										/* Funcao free usada para desalocar a regiao de memoria alocada para o vertice que esta sendo deletado */
@@ -69,7 +70,7 @@ int pop(Path *path)											/* Funcao usada para retirar vertices da pilha, pa
 		return -1;											/* Caso nao tenha mais nada para apagar, retorna -1, auxiliador de erros e loops */
 }
 
-int compare(Path *path1, Path *path2)
+int compare(Path *path1, Path *path2)						/* Retorna 1 caso sejam diferentes e -1 caso sejam iguais */
 {
 	int flag=0;
 	Vertex *ant=path1->head, *prox=path2->head;
@@ -113,10 +114,10 @@ Path* interseccao(Path* p1, Path* p2)
 Path* uniao(Path* p1, Path* p2)
 {
 	int tam=0, vet[99];
-	int i, flag;
+	int i, j, flag;
 	
 	Path *aux;
-	Vertex *v1, *v2=p2->head;
+	Vertex *v1, *v2;
 	
 	aux=malloc(sizeof(Path));
 	
@@ -126,9 +127,9 @@ Path* uniao(Path* p1, Path* p2)
 		tam++;
 	}
 	
-	for(v2=p2->head; v2!=NULL; v2=v2->next)
+	for(v2=p2->head, j=0; v2!=NULL; v2=v2->next)
 	{
-		for(i=0, flag=0; i<tam; i++)
+		for(i=0, flag=0; i<(tam-j); i++)
 		{
 			if(vet[i]==v2->vertex)
 			{
@@ -140,6 +141,7 @@ Path* uniao(Path* p1, Path* p2)
 		{
 			vet[tam]=v2->vertex;
 			tam++;
+			j--;
 		}
 	}
 	
@@ -195,7 +197,7 @@ Path* genPath(int n, int mat[n][n], int count, double proba)/* Funcao usada para
 
 /* As quatro estacoes - inverno */
 /* Antonio Vivaldi */
-Path* multiPath(int n, int mat[n][n], double proba)
+Path* multiPath(int n, int mat[n][n], int* tam, double proba)
 {
 	Path *path, *aux;
 	int count=0, i, j;
@@ -221,13 +223,17 @@ Path* multiPath(int n, int mat[n][n], double proba)
 		show(&path[j]);
 	}
 	
-	interseccao(&path[0], &path[1]);
+	*tam=i;
 	return path;
 }
 
 void insertionSort(int arr[], int n)
 {
    int i, key, j;
+   
+   if(n==0)
+	   return;
+   
    for (i = 1; i < n; i++)
    {
        key = arr[i];
