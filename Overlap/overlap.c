@@ -7,7 +7,7 @@
 #define SUM 2
 
 /*											IMPOTRTANTE												*/
-/*								Overflow deve estar a partir do passo 3								*/
+/*										Olhar interseccao											*/
 /*											IMPOTRTANTE												*/
 
 double confiabilidade;
@@ -24,6 +24,7 @@ void overlap(Path *caminho_minimo1, Path *caminho_minimo2, int op, int tam)
 	Vertex *vAux;																				/* Pilha de vetices auxiliar usado para definir a confiabilidade dos vertices */
 	
 	aux=malloc(tam*sizeof(Path));
+	newStack=malloc(99*sizeof(Path));
 	
 	/* Passo 1 */
 	if(compare(caminho_minimo1, caminho_minimo2)==-1)											/* Caso os caminho minimos sejam iguais, mudar operacao para soma */
@@ -128,8 +129,8 @@ void overlap(Path *caminho_minimo1, Path *caminho_minimo2, int op, int tam)
 		for(i=1; i<j; i++)
 		{
 			for(k=0; k<i; k++)
-				newStack=uniao(&aux[i], &aux[k]);
-			overlap(caminho_minimo1, newStack, op, 1);
+				uniao(&aux[i], &aux[k], &newStack[k]);
+			overlap(caminho_minimo1, newStack, op, k);
 		}
 		
 	/* Passo 6 */
@@ -158,7 +159,7 @@ int main()
 	printf("Confiabilidade: %lf\n", vProbabilidade);
 	
 	//Gerando caminhos minimos
-	caminho_minimo=multiPath(n, mat, &tam, vProbabilidade);
+	caminho_minimo=simples(n, mat, &tam, vProbabilidade);
 	
 	printf("Tamanho: %d\n", tam);
 	
