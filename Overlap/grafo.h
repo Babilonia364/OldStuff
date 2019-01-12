@@ -85,27 +85,40 @@ int compare(Path *path1, Path *path2)						/* Retorna 1 caso sejam diferentes e 
 		ant=ant->next;
 		prox=prox->next;
 	}
-	if(flag || ((ant!=prox) && ((ant==NULL) || (prox==NULL))))
-		return 1;
+	if(flag)
+		return 0;
 	else
-		return -1;
+	{
+		if(prox==NULL && ant==NULL)
+			return 1;
+		else
+			return 0;
+	}
 }
 
 Path* interseccao(Path* p1, Path* p2)
 {
 	Path *aux;
-	Vertex *v1, *v2=p2->head;
+	Vertex *v1, *v2;
+	int vertices[100], size=0, i;
 	
 	aux=malloc(sizeof(Path));
+	initPath(aux);
 	
 	for(v1=p1->head; v1!=NULL; v1=v1->next)
 	{
 		for(v2=p2->head; v2!=NULL; v2=v2->next)
 			if(v1->vertex==v2->vertex)
 			{
-				push(aux, v1->vertex, v1->prob);
+				vertices[size]=v1->vertex;
+				size++;
 				break;
 			}
+	}
+
+	for(; size>0; size--)
+	{
+		push(aux, vertices[(size-1)], p1->head->prob);
 	}
 	
 	//show(aux);
@@ -128,7 +141,7 @@ void uniao(Path* p1, Path* p2, Path *result)
 	
 	for(v2=p2->head, j=0; v2!=NULL; v2=v2->next)
 	{
-		for(i=0, flag=0; i<(tam-j); i++)
+		for(i=0, flag=0; i<tam; i++)
 		{
 			if(vet[i]==v2->vertex)
 			{
@@ -140,7 +153,6 @@ void uniao(Path* p1, Path* p2, Path *result)
 		{
 			vet[tam]=v2->vertex;
 			tam++;
-			j--;
 		}
 	}
 	
