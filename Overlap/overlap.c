@@ -14,7 +14,7 @@ double confiabilidade;
 
 void overlap(Path *caminho_minimo1, Path *caminho_minimo2, int op, int tam)
 {
-	int i, j, k;																				/* Variaveis de laco */
+	int i, j, k, l;																				/* Variaveis de laco */
 	int delete[MAX];
 	int n=0, flag=0;
 	double pConfiabilidade;
@@ -136,15 +136,21 @@ void overlap(Path *caminho_minimo1, Path *caminho_minimo2, int op, int tam)
 		{
 			for(k=0; k<i; k++)
 			{
+				printf("uniao na posicao k=%d no comeco do laco\n", k);
+				show(&newStack[k]);
 				printf("stack[i]\n");
 				show(&aux[i]);
-				printf("stack[j]\n");
-				show(&aux[j]);
+				printf("stack[k]\n");
+				show(&aux[k]);
 				uniao(&aux[i], &aux[k], &newStack[k]);
-				printf("uniao\n");
+				printf("uniao na posicao k=%d no fim do laco\n", k);
 				show(&newStack[k]);
 			}
 			overlap(caminho_minimo1, newStack, op, k);
+			for(l=0; l<k; l++)
+				while(pop(&newStack[l])==1);
+			printf("Tentando apagar a uniao\n");
+			show(&newStack[k]);
 		}
 		
 	/* Passo 6 */
