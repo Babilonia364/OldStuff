@@ -157,7 +157,7 @@ void uniao(Path* p1, Path* p2, Path *result)
 	}
 	
 	insertionSort(vet, tam);
-	for(i=0; i<tam; i++)
+	for(i=tam-1; i>=0; i--)
 		push(result, vet[i], p1->head->prob);
 }
 
