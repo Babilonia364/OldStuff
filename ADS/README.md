@@ -1,1 +1,1 @@
-Curso de Análise de Desempenho de Software
+Cadeira de Análise de Desempenho de Software
