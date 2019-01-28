@@ -1,4 +1,4 @@
-#TRABAIO
+#TRABALHO
 
 Algoritmo para veirificação de confiabilidade de redes.
 Versão traduzida para C.
