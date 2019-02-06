@@ -15,7 +15,8 @@ void Desenha_Franja();
 void Desenha_Ante_Braco();
 
 float teta1=0.0, teta2=0.0;
-float up=0, left=0;
+float up=0.0, left=0.0;
+float sca=1.0;
 
 void Desenha_Cabecao()
 {
@@ -106,6 +107,11 @@ void Desenha_Ante_Braco()
 
 void Desenha()
 {
+	/* Escala */
+	glTranslatef(-200.0, -200.0, 0.0);
+	glScalef(sca, sca, 1.0);
+	glTranslatef(200.0, 200.0, 0.0);
+	/* Translação */
 	glTranslatef(left, up, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	Desenha_Cabecao();
@@ -113,13 +119,14 @@ void Desenha()
 	Desenha_Boquinha();
 	Desenha_Franja();
 	Desenha_Corpo();
+	/* Rotação */
 	glTranslatef(325.0, 300.0, 0.0);
 	glRotatef(teta1, 0.0, 0.0, 1.0);
 	glTranslatef(-325.0, -300.0, 0.0);
 	Desenha_Braco();
-	glTranslatef(325.0, 300.0, 0.0);
+	glTranslatef(325.0, 195.0, 0.0);
 	glRotatef(teta2, 0.0, 0.0, 1.0);
-	glTranslatef(-325.0, -300.0, 0.0);
+	glTranslatef(-325.0, -195.0, 0.0);
 	Desenha_Ante_Braco();
 	
 	glFlush();
@@ -135,7 +142,7 @@ void GerenciaTeclado(unsigned char key, int x, int y)
 			glPopMatrix();
 			glTranslatef(0.0, 5.0, 0.0);
 			glPushMatrix();
-			up+=5;
+			up+=5.0;
 			break;
 		
 		case 'A':
@@ -170,6 +177,7 @@ void GerenciaTeclado(unsigned char key, int x, int y)
 			glScalef(0.5, 0.5, 1.0);
 			glTranslatef(600.0, 600.0, 0.0);
 			glPushMatrix();
+			sca*=0.5;
 			break;
 		
 		case 'P':
@@ -179,6 +187,7 @@ void GerenciaTeclado(unsigned char key, int x, int y)
 			glScalef(1.5, 1.5, 1.0);
 			glTranslatef(75.0, 75.0, 0.0);
 			glPushMatrix();
+			sca*=1.5;
 			break;
 		
 		//Rotacao
@@ -224,6 +233,7 @@ void GerenciaTeclado(unsigned char key, int x, int y)
 			glPushMatrix();
 			teta1=teta2=0.0;
 			up=left=0.0;
+			sca=1.0;
 			break;
 	}
 	glutPostRedisplay();
