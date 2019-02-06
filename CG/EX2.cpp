@@ -200,6 +200,23 @@ void GerenciaTeclado(unsigned char key, int x, int y)
 			glPushMatrix();
 			break;
 		
+		case ',':
+			teta1=teta1-5;
+			glPopMatrix();
+			glLoadIdentity();
+			glutDisplayFunc(Desenha);
+			glPushMatrix();
+			break;
+		
+		case '.':
+			teta2=teta2-5;
+			glPopMatrix();
+			glLoadIdentity();
+			glutDisplayFunc(Desenha);
+			glPushMatrix();
+			break;
+		
+		//CLear
 		case 'C':
 		case 'c':
 			glPopMatrix();
@@ -228,7 +245,7 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_RGB);
 	glutInitWindowSize (LARGURA, ALTURA);
 	glutInitWindowPosition (100, 100);
-	glutCreateWindow("Transformacoes");
+	glutCreateWindow("Robo emo");
 	glutDisplayFunc(Desenha);
 	glutKeyboardFunc(GerenciaTeclado);
 	Inicia();
