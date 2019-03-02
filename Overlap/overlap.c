@@ -1,13 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <libxml2/libxml/tree.h>
 #include "grafo.h"
+#include "readXML.h"
 
 #define MAX 9999
 #define SUB 1
 #define SUM 2
 
 /*											IMPOTRTANTE												*/
-/*										Olhar interseccao											*/
+/*		Compilar usando: gcc nome.c -I/usr/include/libxml2 -lxml2 -o output && ./output				*/
 /*											IMPOTRTANTE												*/
 
 double confiabilidade;
@@ -166,6 +168,7 @@ void overlap(Path *caminho_minimo1, Path *caminho_minimo2, int op, int tam)
 int main()
 {
 	int i, tam, n=5;
+	int **mat2;
 	Path *caminho_minimo;
 	int mat[5][5] ={0, 1, 1, 1, 0,
 					1, 0, 1, 1, 0,
@@ -177,7 +180,7 @@ int main()
 	printf("Confiabilidade dos vertices:\n");
 	scanf("%lf", &vProbabilidade);
 	printf("Confiabilidade: %lf\n", vProbabilidade);
-	
+	//mat2=readXML("Teste.xml", &n);
 	//Gerando caminhos minimos
 	caminho_minimo=simples(n, mat, &tam, vProbabilidade);
 	
