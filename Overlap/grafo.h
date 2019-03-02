@@ -182,18 +182,18 @@ int zeroPath(Path* path)									/* Apenas zera os caminhos visitados */
 		aux->used=0;
 }
 
-Path* simples(int n, int mat[n][n], int* size2, double proba)	/* Gerar os caminhos minimos e simples */
+Path* simples(int n, int mat[n][n], int* size2, double proba)		/* Gerar os caminhos minimos e simples */
 {
-	int i, j, size;												/* Variaveis i e j de laco e variavel size para calcular a quantidade de caminhos diferentes*/
+	int i, j, size, k;											/* Variaveis i e j de laco e variavel size para calcular a quantidade de caminhos diferentes*/
 	int remover, nodo, addNodo;									/* Flag romover e addNodo e variavel nodo apenas para deixar o code mais legivel */
 	
-	Path *aux, *megaLista, *nos, *teste;						/* Varoaveos de caminho */
+	Path *box, *megaLista, *nos, *teste;						/* Variaveis de caminho */
 	Vertex *vAux;
 	
-	aux=malloc(sizeof(Path));									/* Criando espaco de memoria para alocar caminhos temporariamente */
+	box=malloc(sizeof(Path));									/* Criando espaco de memoria para alocar caminhos temporariamente */
 	nos=malloc(n*sizeof(Path));									/* Criando uma lista de nos que estao ligados no grafo, POR EXEMPLO: 0 esta ligado com 1 e 2, a lista tera 0 -> 1 -> 2 */
 	megaLista=malloc(99*sizeof(Path));							/* Criando a lista que vai armazenar todas as listas com caminhos minimos */
-	
+	show(&nos[4]);
 	size=0;
 	
 	for(i=(n-1); i>=0; i--)										/* Criando as listas de vertices ligados entre si usando a matriz de ajacencia */
@@ -205,23 +205,24 @@ Path* simples(int n, int mat[n][n], int* size2, double proba)	/* Gerar os caminh
 		}
 	}
 	
-	push(aux, 0, proba);												/* Colocando primeiro vertice da lista */
+	push(box, 0, proba);												/* Colocando primeiro vertice da lista */
 	remover=0;													/* A ultima acao foi adicionar, remover sera 0 */
-	
-	while(aux->head!=NULL)										/* Enquanto ainda existir elementos na lista, rodar o algoritmo de caminhos */
+
+	while(box->head!=NULL)										/* Enquanto ainda existir elementos na lista, rodar o algoritmo de caminhos */
 	{
-		nodo=aux->head->vertex;									/* Nodo apenas para limpar mais o codigo */
+		nodo=box->head->vertex;									/* Nodo apenas para limpar mais o codigo */
+
 		if(mat[nodo][n-1]==1)									/* Caso o no do topo da pilha tenha ligacao com o no destino */
 		{
-			push(aux, (n-1), proba);									/* Colocando o no destino no topo da pilha */
-			for(vAux=aux->head; vAux!=NULL; vAux=vAux->next)			/* Salvando a pilha como caminho minimo */
+			push(box, (n-1), proba);									/* Colocando o no destino no topo da pilha */
+			for(vAux=box->head; vAux!=NULL; vAux=vAux->next)			/* Salvando a pilha como caminho minimo */
 			{
 				push(&megaLista[size], vAux->vertex, proba);
 			}
 			size++;														/* Aumentando o contador de caminhos */
 			for(i=0; i<2; i++)											/* Apagando os 2 nos do topo da pilha */
 			{
-				pop(aux);
+				pop(box);
 			}
 			remover=1;													/* Como foi removido algo, remover sera 1 */
 		}else if(mat[nodo][n-1]==0)										/* Se nao ha ligacao do vertice no topo da filha com o vertice final */
@@ -229,13 +230,13 @@ Path* simples(int n, int mat[n][n], int* size2, double proba)	/* Gerar os caminh
 			teste=&nos[nodo];											/* Tava testando uma coisa */
 			for(vAux=teste->head; vAux!=NULL; vAux=vAux->next)			/* Enquanto a pilha de nos ligado a um no X nao estiver vazia */
 			{
-				if(onStack(aux, vAux->vertex))							/* Caso o vertice ja esteja na pilha, passar para proximo vertice */
+				if(onStack(box, vAux->vertex))							/* Caso o vertice ja esteja na pilha, passar para proximo vertice */
 				{}
 				else if(remover==0 || remover==1)						/* Caso o vertice nao esteja na pilha e a ultima acao tenha sido remover ou adicionar */
 				{
 					if(vAux->used==0)									/* Caso o vertice nao tenha sido usado ainda */
 					{
-						push(aux, vAux->vertex, proba);					/* Adiciona o vertice na pilha de caminhos */
+						push(box, vAux->vertex, proba);					/* Adiciona o vertice na pilha de caminhos */
 						vAux->used=1;									/* Marca o vertice como ja usado */
 						remover=0;										/* Marca a ultima acao como tendo sido adicionar, ou seja, remover e zero*/
 						addNodo=1;										/* Sobe a flag que adicionou um no na pilha */
@@ -247,7 +248,7 @@ Path* simples(int n, int mat[n][n], int* size2, double proba)	/* Gerar os caminh
 			if(addNodo==0)												/* Caso a flag de adicionar no na pilha tenha continue 0 */
 			{															/* Ou seja, nao tem ligacao direta com o destino e nem possui mais nos possiveis para adicionar na pilha */
 				zeroPath(&nos[nodo]);									/* Zera os nos ja usados que estao ligados ao no atual */
-				pop(aux);												/* Remove o no do topo da pilha */
+				pop(box);												/* Remove o no do topo da pilha */
 				remover=1;												/* Defini a ultima acao como remover */
 			}
 			
@@ -256,7 +257,7 @@ Path* simples(int n, int mat[n][n], int* size2, double proba)	/* Gerar os caminh
 	
 	*size2=size;
 	
-	free(aux);
+	free(box);
 	free(nos);
 	
 	return megaLista;
