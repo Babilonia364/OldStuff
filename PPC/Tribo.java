@@ -67,7 +67,7 @@ public class Tribo extends Thread
 						tEnd = new Date().getTime();
 						tTotal = tEnd - tInit;
 
-						if(tTotal >= (5*60010))
+						if(tTotal >= (2*60010))
 						{
 							caldeirao.release();
 							break;
@@ -114,7 +114,7 @@ public class Tribo extends Thread
 					tInit = new Date().getTime();
 					
 					//Troca de contexto para todos os  villagers iniciarem
-					//Tentando diminuir a diferença do tempo inicial
+					//Tentando diminuir a diferenĂ§a do tempo inicial
 					Thread.sleep(5);
 				}
 				
@@ -131,14 +131,15 @@ public class Tribo extends Thread
 						System.out.println("Villager " + id + " se servindo");
 						servir();
 						Thread.sleep(1000);
-						comer();
-						Thread.sleep(3000);
 						
 						//Liberando o caldeirao para outros canibais
 						caldeirao.release();
+						comer();
+						Thread.sleep(3000);
+						
 						//Villager vai esperar no minimo o tempo de 2 villagres comerem
 						//Para que cada canibal coma, pelo menos, uma vez
-						Thread.sleep((numVillagers-1)*4000);
+						Thread.sleep((numVillagers-1)*1000);
 					}else
 					{
 						System.out.println("Caldeirao vazio");
@@ -157,7 +158,7 @@ public class Tribo extends Thread
 						tEnd = new Date().getTime();
 						tTotal = tEnd - tInit;
 
-						if(tTotal >= (5*60010))
+						if(tTotal >= (2*60010))
 						{
 							caldeirao.release();
 							break;
