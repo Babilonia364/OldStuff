@@ -14,18 +14,18 @@ int main()
 	int x, y;							/* auxiliares x e y para desenhar a reta na tela */
 	
 	/* Coordenadas de x */
-	pointIni[0]=7;
+	pointIni[0]=8;
 	pointEnd[0]=5;
 	/* Coordenadas de y */
-	pointIni[1]=10;
+	pointIni[1]=-2;
 	pointEnd[1]=5;
 	
-	/*printf("Coordenadas do ponto inicial:\n");
+	printf("Coordenadas do ponto inicial:\n");
 	scanf("%lf%lf", &pointIni[0], &pointIni[1]);
 	printf("\n");
 	printf("Coordenadas do ponto final:\n");
 	scanf("%lf%lf", &pointEnd[0], &pointEnd[1]);
-	printf("\n");*/
+	printf("\n");
 	
 	if(pointIni[0]==pointEnd[0])					/* Esse if e else poderia ser um try-catch... */
 		angCoef=0.0;
@@ -47,12 +47,11 @@ int main()
 
 	/* Desenhando efetivamente a reta: inicio */
 	
-	x=minX;
+	x=(int)floor(minX);
 	
 	if(x<0)													/* Caso o ponto inicial de x esteja fora da tela */
 		x=0;												/* Começar o primeiro ponto com 0 */
-	else if(x>=ROWS)
-		x=(int)floor(std::max(0.0, minX));
+
 	y=(int)floor((angCoef*(x-pointIni[0]))+pointIni[1]);	/* Calculando o proximo valor de y */
 	
 	if(y<0)													/* Caso o ponto de y no qual x seja 0 também esteja fora da tela */
@@ -73,7 +72,8 @@ int main()
 	
 	while(true)
 	{
-		if(x>=ROWS || y >= COLUMNS)
+		if((x>=ROWS || y >= COLUMNS) ||
+		   (x<0 || y<0))
 			break;
 		if(((x>=minX)&&(x<=maxX)) &&			/* Caso x pertenca ao conjunto de pontos de x que pertecem a reta */
 		   ((y>=minY)&&(y<=maxY)))				/* Caso y pertenca ao conjunto de pontos de y que pertecem a reta */
