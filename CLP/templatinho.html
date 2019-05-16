@@ -1,0 +1,14 @@
+{{if .Success}}
+	<h1>CORNO cadastrado com sucesso</h1>
+{{else}}
+	<h1>Contact</h1>
+	<form method="POST">
+		<label>Nome:</label><br />
+		<input type="text" name="nome"><br />
+		<label>Email:</label><br />
+		<input type="text" name="email"><br />
+		<label>Senha:</label><br />
+		<input type="text" name="senha"><br />
+		<input type="submit">
+	</form>
+{{end}}
